@@ -1,0 +1,30 @@
+---
+title: Prometheus & Grafana for DevOps Engineers
+subtitle: A Practical Handbook for Metrics, Dashboards, and Alerting
+author: DevOps Handbook Series
+series: DevOps Handbook Series
+volume: 6
+volume-slug: prometheus-grafana
+date: October 2026
+lang: en
+publisher: DevOps Handbook Series
+description: >
+  A practical Prometheus and Grafana handbook for DevOps engineers in two
+  parts: metrics foundations and production practice. Verified against
+  Prometheus 3.15, Alertmanager 0.34, and Grafana 13.3 (October 2026),
+  including Remote Write 2.0, OTLP ingestion, service discovery and
+  relabeling, burn-rate alerting, Git Sync, and kube-prometheus-stack.
+keywords:
+  - Prometheus
+  - PromQL
+  - Grafana
+  - Alertmanager
+  - Monitoring
+  - Observability
+  - Metrics
+  - Service Discovery
+  - Recording Rules
+  - Thanos
+  - Mimir
+  - kube-prometheus-stack
+  - DevOps

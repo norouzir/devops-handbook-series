@@ -1,0 +1,20 @@
+# Build artifacts — regenerate with ./build.sh all or `make`
+books/*/output/
+books/*/build/.print.html
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+
+# Python bytecode (cover scripts)
+__pycache__/
+*.py[cod]
+
+# Local build environment (pandoc/weasyprint) — not part of the repository
+.venv/
+.tools/
+
+# Agent workspace marker
+.freebuff/

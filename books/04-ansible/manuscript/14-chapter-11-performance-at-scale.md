@@ -1,0 +1,43 @@
+# Chapter 11 - Performance at Scale {#ch11}
+
+## 11.1 Reading a Slow Run Before Optimizing It
+
+Performance work starts with measurement, and Ansible ships the instruments. `--profile-tasks` (via the `ansible.posix.profile_tasks` callback enabled in `ansible.cfg`) appends per-task timing to the run summary and names the long poles immediately; `time ansible-playbook ...` over a known run is the baseline metric; and the run summary's task counts (`ok`/`changed`/`skipped`) reveal the free win hiding in plain sight - hundreds of `ok` tasks are work being *verified*, which is correct, but hundreds of gathered facts or repeated package-manager operations are the usual culprits. Profile before touching anything: an estate where the bottleneck is SSH handshake time needs a different fix than one where it is fact gathering or an external API, and the fix chosen without the profile is a folklore upgrade.
+
+The three canonical time sinks, in the order they usually appear as fleets grow: per-connection overhead (SSH setup, control-path Master connections), fact gathering (the `setup` module's second or two per host, paid at every play), and serial modules with external side effects (package managers, cloud APIs, templated file copies of real size). Each has a first-line fix - connection multiplexing and pipelining, fact caching or subsets, and module choices respectively - and each is covered below with its trade-offs. What none of them replaces is the structural lever: smaller, well-fact-ed plays targeting exactly the hosts that need them, which is why [Chapter 3](#ch3)'s inventory discipline and [Chapter 5](#ch5)'s tags are performance tools wearing a correctness costume.
+
+## 11.2 Connections: forks, pipelining, and the Control Path
+
+`forks` (default 5 in `ansible.cfg`'s `[defaults]`) is the number of hosts Ansible works in parallel; raising it to 20-50 is the first and largest lever on wall-clock time, bounded by the control node's CPU and by the politeness ceiling of what it is hammering (a package mirror, a cloud API's rate limit, the SSH service on ten simultaneous connections). With `strategy: linear` the wave size equals `forks`; with `serial` batches, each wave proceeds in parallel up to the fork limit - so a fleet of 200 with `serial: 25%` runs fifty-host waves, each capped by forks. The right value is found by measurement, not doctrine: double it until the run stops getting faster or something upstream complains.
+
+SSH itself hides the next two wins. `pipelining = True` (`[ssh_connection]`) sends module execution through the SSH session without a second round trip per task - a broad multiplier on high-latency links, disabled only by ancient sudoers configurations (`requiretty`) that modern distributions have retired. Connection multiplexing (ControlPersist via OpenSSH options) keeps one authenticated channel per host across the whole run - usually already effective through the defaults, worth verifying with `ssh -O check` style probes when connection time dominates a profile. For clouds and API-driven estates, remember that every task pays a Python interpreter start on the target: plays that only orchestrate APIs should run `connection: local` (or `delegate_to: localhost`) and skip the SSH round trips entirely.
+
+## 11.3 Facts: Cache, Subset, or Skip
+
+Fact caching turns per-run discovery into per-TTL discovery: `fact_caching = ansible.builtin.jsonfile` plus `fact_caching_connection` and `fact_caching_timeout` in `ansible.cfg` persists gathered facts between runs, so a playbook needing `ansible_default_ipv4` reads it from cache without connecting `setup` to the host. The contract to respect is staleness - a TTL of hours is correct for fleet inventories that change slowly, wrong for autoscaling groups where today's facts describe yesterday's hosts - and the escape hatch (`--flush-cache`, or a targeted `setup` re-run in the play that must be fresh) is part of the runbook, not an improvisation. Set `gathering = smart` so Ansible uses the cache when fresh and gathers when not, and the default "gather everything, always" posture disappears.
+
+The finer tools trim what is gathered when gathering cannot be skipped: `setup`'s `gather_subset` (`!all,network` and friends) and `filter` (a regex on fact names) shrink the payload; play-level `module_defaults` pins the subset for implicit gathering; `gather_facts: false` removes it from plays that orchestrate rather than configure. The composite policy that scales: orchestration plays never gather; configuration plays gather a minimal subset with caching enabled; and the handful of plays that need deep hardware facts gather explicitly with a stated reason - visible in review, honest in the profile.
+
+::: {.note}
+**Best practice - cache facts, flush deliberately**
+
+Make fact freshness a decision recorded in the play: `gathering: smart` with a TTL as the estate default, `--flush-cache` in the runbooks that must see current truth (capacity work, network re-plumbing), and a comment on any play that overrides `gather_facts`. The incident you are preventing is the subnet move that took effect yesterday - faithfully reported by yesterday's cache.
+:::
+
+## 11.4 Strategies, serial, and async: Shaping Time, Not Just Saving It
+
+Execution strategy is a performance decision with correctness consequences. `linear` (default) keeps hosts in lockstep at every task - reviewable, debuggable, and the *slowest* host sets the pace of every wave; `free` lets fast hosts race ahead through the task list - a real speedup when task latency varies wildly per host, paid for in run logs that interleave and in blast radius that widens (a failed host stops alone, mid-list). `host_pinned` pins tasks per host to workers, useful for long per-host sequences. The knob that usually matters more than the strategy is `serial` - waves bound the blast radius *and* cap concurrency, and [Chapter 14](#ch14) builds rolling updates on exactly that; performance tuning that widens waves while chasing seconds is how a bad variable becomes a fleet-wide outage.
+
+`async` detaches long-running tasks from the task barrier: the module starts, the run continues, and `async_status` polls (or a follow-up `wait_for` checks the symptom directly) - the correct tool for reboots, big unarchivals, and long builds, with `poll: 0` making the launch fire-and-poll-later. The trap is concluding that `async` is a concurrency feature: it removes a task from the *critical path of one host*, it does not add hosts to `forks`, and unpolled async work that outlives the play is invisible failure. Reserve it for genuinely long operations, keep `async_timeout` generous and explicit, and prefer structural fixes (fewer hosts per wave, fewer tasks per play) when the profile says the run is merely large rather than long.
+
+## 11.5 The Rest of the Dial: callbacks, lookup caching, and honest ceilings
+
+Mature estates add three further levers. Callback plugins shape what the run *does* beyond printing: `profile_tasks` for the timing that drives this chapter, `community.general.log_plays` or a log-collection callback for per-host run records, and `community.general.yaml` for summaries humans parse faster. Lookup-heavy playbooks cache expensive lookups explicitly (a `set_fact` computed once with `run_once`, or lookup plugin-level caching where supported) - a cloud-inventory lookup per task is a per-task API call, and moving it to play scope is often the single largest win in a data-heavy run. And the honest ceilings: the control node's CPU against `forks`, the Python memory of the scheduler against fan-out, and the remote services' rate limits against per-task module calls - all three appear in profiles as a flattening curve, and all three are solved by *more control nodes or fewer calls*, not by more configuration flags.
+
+::: {.warn}
+**Watch out - fast runs that hide slow failures**
+
+Every performance lever in this chapter can mask breakage: pipelining past a misbehaving sudo, fact caches stale across a network migration, `async` fire-and-forget that never succeeded, `free` strategy racing past a dependency another host was supposed to lay down. Adopt the ordering that keeps honesty primary - correctness first (`--check --diff` clean, assertions passing from [Chapter 7](#ch7)), then profile, then optimize *with the tests of [Chapter 12](#ch12) as the gate* - and the speed arrives without buying a new class of 2 a.m. surprise.
+:::
+
+**See also:** [Chapter 3](#ch3) for the inventory topology these settings act on, [Chapter 12](#ch12) for the test gate that must survive every optimization, and [Chapter 14](#ch14) for the rolling-update patterns whose pacing is deliberate.

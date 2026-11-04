@@ -1,0 +1,24 @@
+---
+title: GitHub Actions for DevOps Engineers
+subtitle: A Practical Handbook from First Commit to Production Automation
+author: DevOps Handbook Series
+series: DevOps Handbook Series
+volume: 3
+volume-slug: github-actions
+date: October 2026
+lang: en
+publisher: DevOps Handbook Series
+description: >
+  A practical GitHub Actions handbook for DevOps engineers in two parts:
+  essentials and advanced operations. Verified against the GitHub Actions
+  platform as of October 2026 (Node 24 runtime, workflow lockfiles, OIDC,
+  artifact attestations, ARC).
+keywords:
+  - GitHub Actions
+  - DevOps
+  - CI/CD
+  - Workflows
+  - Self-hosted runners
+  - OIDC
+  - Supply-chain security
+  - Automation

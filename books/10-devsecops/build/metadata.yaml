@@ -1,0 +1,49 @@
+---
+title: DevSecOps for DevOps Engineers
+subtitle: A Practical Handbook for Securing the Pipeline
+author: DevOps Handbook Series
+series: DevOps Handbook Series
+volume: 10
+volume-slug: devsecops
+date: October 2026
+lang: en
+publisher: DevOps Handbook Series
+description: >
+  A practical security handbook for DevOps engineers who already ship
+  software with containers, Kubernetes, CI/CD, and infrastructure as
+  code, in two parts. Part I secures the software supply chain: secrets
+  management with gitleaks and HashiCorp Vault, hardening GitHub Actions
+  with least-privilege tokens and OIDC, scanning source and dependencies
+  with Semgrep and Dependabot, container image security with distroless
+  bases and Trivy, artifact signing and SBOMs with Cosign, Syft, and
+  SLSA provenance, and a secured end-to-end build pipeline. Part II
+  secures what is running: policy as code for Kubernetes with Kyverno
+  and OPA Gatekeeper, runtime security with RBAC, NetworkPolicy, and
+  Falco, infrastructure-as-code scanning, DAST with the OWASP ZAP
+  baseline, security telemetry, incident response, compliance as code,
+  and a red-team capstone that attacks the pipeline the book built.
+  Verified against gitleaks v8, Semgrep 1.x, Trivy 0.6x, Cosign v2,
+  Syft 1.x, Kyverno 1.1x, OPA Gatekeeper v3, OWASP ZAP 2.1x, Falco,
+  kube-bench 0.1x, and actions/checkout v7 (October 2026).
+keywords:
+  - DevSecOps
+  - Security
+  - Supply Chain Security
+  - Secrets Management
+  - HashiCorp Vault
+  - Gitleaks
+  - Semgrep
+  - Trivy
+  - Cosign
+  - Sigstore
+  - SBOM
+  - SLSA
+  - Kyverno
+  - OPA Gatekeeper
+  - Falco
+  - NetworkPolicy
+  - OWASP ZAP
+  - GitHub Actions
+  - Kubernetes
+  - Incident Response
+  - Compliance as Code

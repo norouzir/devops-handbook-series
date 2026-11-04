@@ -1,0 +1,79 @@
+/* epub.css — simplified stylesheet for the EPUB build.
+   E-readers apply only a subset of CSS; keep it conservative.
+   Colors mirror the observability theme (warm charcoal cover, flame accent). */
+
+body {
+  font-family: serif;
+  color: #1A1A1A;
+  line-height: 1.6;
+  margin: 0.4em;
+}
+h1, h2, h3 { font-family: serif; color: #9E3A1D; line-height: 1.3; }
+h1 {
+  font-size: 1.55em;
+  margin: 1.6em 0 0.9em;
+  border-bottom: 2px solid #B5431F;
+  padding-bottom: 0.3em;
+  page-break-before: always;
+}
+h1:first-of-type { page-break-before: auto; }
+h2 { font-size: 1.25em; margin: 1.4em 0 0.6em; }
+h3 { font-size: 1.05em; color: #2A2A2A; margin: 1.1em 0 0.5em; }
+
+code {
+  font-family: monospace;
+  font-size: 0.85em;
+  color: #8A4423;
+  background: #FAF4EF;
+}
+pre {
+  background: #FAF4EF;
+  border-left: 3px solid #B5431F;
+  padding: 0.6em 0.9em;
+  margin: 0.9em 0;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+pre code { background: none; color: #38251A; font-size: 0.8em; }
+
+div.note, div.warn {
+  margin: 1em 0;
+  padding: 0.55em 0.9em 0.1em;
+  border-left: 4px solid #3D6B8E;
+  background: #EDF3F8;
+}
+div.warn { border-left-color: #C05621; background: #FBF1EA; }
+div.note > p:first-child, div.note > h3:first-child { color: #2C5878; }
+div.warn > p:first-child, div.warn > h3:first-child { color: #8A4212; }
+
+.lab {
+  background: #FBF5EE;
+  border: 1px solid #E3B693;
+  padding: 0.7em 1.1em 0.7em;
+  margin: 1.1em 0;
+}
+.lab > h3:first-child { color: #9E3A1D; margin-top: 0.2em; }
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.9em 0 1.2em;
+  font-size: 0.85em;
+  border-top: 2px solid #B5431F;
+  border-bottom: 2px solid #B5431F;
+}
+caption {
+  caption-side: bottom;
+  text-align: left;
+  font-size: 0.8em;
+  color: #444444;
+  font-weight: bold;
+  padding-top: 0.4em;
+}
+th { background: #B5431F; color: #FFFFFF; text-align: left; padding: 0.35em 0.55em; }
+td { padding: 0.3em 0.55em; border-bottom: 1px solid #EBDBD0; vertical-align: top; }
+
+p { margin: 0.7em 0; text-align: left; }
+ul, ol { margin: 0.6em 0; padding-left: 1.4em; }
+li { margin: 0.3em 0; }
+a { color: #B5431F; text-decoration: none; }

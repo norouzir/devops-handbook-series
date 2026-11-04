@@ -1,0 +1,250 @@
+/* style.css — Azure & GCP for DevOps Engineers
+   Cloud theme: deep blue-slate cover/title block, Azure-blue accent
+   with a Google-blue nod, steel-blue note boxes, classic textbook body.
+   Shared by the HTML build; the PDF build adds print.css on top. */
+
+:root {
+  --cover-bg: #102A43;        /* cover / title block background (deep blue slate) */
+  --accent: #4DA3E8;          /* cloud blue (cover rules, links) */
+  --brand: #0F6CBD;           /* Azure-leaning blue for white pages (bars, borders) */
+  --head: #14324D;            /* headings (deep blue) */
+  --title-text: #F2F8FD;
+  --body: #1A1A1A;
+  --muted: #707070;
+  --code-text: #0B5394;
+  --code-bg: #EEF4FB;
+  --code-line: #D3E3F2;
+  --note-bg: #EEF3F8;
+  --note-bar: #3D5A80;
+  --note-title: #2C4A6E;
+  --warn-bg: #FBF1EA;
+  --warn-bar: #C05621;
+  --warn-title: #8A4212;
+  --lab-bg: #EFF6FD;
+  --lab-border: #A9CCEA;
+  --table-head: #1E4064;
+  --table-line: #DFE6EC;
+  --table-zebra: #F6F9FB;
+  --serif: Georgia, "Tinos", "Liberation Serif", "Times New Roman", serif;
+  --sans: "Helvetica Neue", "Carlito", "Liberation Sans", Arial, sans-serif;
+  --mono: "SF Mono", "Consolas", "DejaVu Sans Mono", "Liberation Mono", "Courier New", monospace;
+}
+
+html { font-size: 17px; }
+body {
+  font-family: var(--serif);
+  color: var(--body);
+  line-height: 1.62;
+  margin: 0 auto;
+  padding: 2.5rem 1.25rem 5rem;
+  max-width: 46rem;
+  text-align: left;
+  hyphens: auto;
+}
+
+/* ---------- title block (dark cover echo) ---------- */
+header#title-block-header {
+  text-align: center;
+  background: var(--cover-bg);
+  border-top: 3px solid var(--accent);
+  border-bottom: 3px solid var(--accent);
+  padding: 4.5rem 1rem 3.5rem;
+  margin-bottom: 3rem;
+}
+header#title-block-header .title {
+  font-family: var(--sans);
+  font-size: 2.35rem;
+  font-weight: 700;
+  color: var(--title-text);
+  line-height: 1.2;
+  margin: 0.4rem 0 1rem;
+}
+header#title-block-header .subtitle {
+  font-size: 1.12rem;
+  color: #D6E0EB;
+  font-style: italic;
+  margin: 0 0 1.6rem;
+}
+header#title-block-header .author,
+header#title-block-header .date {
+  font-size: 0.98rem;
+  color: #A6B7C9;
+  margin: 0.2rem 0;
+}
+
+/* ---------- headings ---------- */
+h1, h2, h3, h4 { font-family: var(--serif); color: var(--head); line-height: 1.28; }
+h1 {
+  font-size: 1.78rem;
+  margin: 3.2rem 0 1.1rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 2px solid var(--brand);
+}
+h2 { font-size: 1.36rem; margin: 2.3rem 0 0.8rem; }
+h3 { font-size: 1.08rem; color: #2A2A2A; margin: 1.7rem 0 0.6rem; }
+h1 + p, h2 + p, h3 + p { margin-top: 0.4rem; }
+p { margin: 0.85rem 0; orphans: 2; widows: 2; }
+
+/* ---------- inline code ---------- */
+code {
+  font-family: var(--mono);
+  font-size: 0.84em;
+  color: var(--code-text);
+  background: var(--code-bg);
+  padding: 0.1em 0.32em;
+  border-radius: 3px;
+}
+
+/* ---------- code blocks ---------- */
+pre {
+  background: var(--code-bg);
+  border: 1px solid var(--code-line);
+  border-left: 4px solid var(--brand);
+  border-radius: 0 4px 4px 0;
+  padding: 0.85rem 1.1rem;
+  margin: 1.15rem 0;
+  overflow-x: auto;
+  line-height: 1.45;
+}
+pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.82rem;
+  color: #1A3A57;
+  white-space: pre;
+}
+
+/* syntax highlighting (pandoc skylighting) */
+code span.kw { color: #1D5FA5; font-weight: 600; }
+code span.dt { color: #B45309; }
+code span.dv, code span.fl { color: #1F6E43; }
+code span.st { color: #1F6E43; }
+code span.co { color: #8A8A8A; font-style: italic; }
+code span.ot { color: #9A5500; }
+code span.er { color: #B3492D; font-weight: 600; }
+
+/* ---------- callouts ---------- */
+div.note, div.warn {
+  margin: 1.25rem 0;
+  padding: 0.75rem 1.1rem 0.15rem;
+  border-left: 4px solid var(--note-bar);
+  background: var(--note-bg);
+  border-radius: 0 4px 4px 0;
+}
+div.warn { border-left-color: var(--warn-bar); background: var(--warn-bg); }
+div.note > p:first-child, div.note > h3:first-child { color: var(--note-title); }
+div.warn > p:first-child, div.warn > h3:first-child { color: var(--warn-title); }
+div.note > p:first-child, div.note > h3:first-child,
+div.warn > p:first-child, div.warn > h3:first-child { margin-top: 0; }
+
+/* ---------- lab boxes ---------- */
+.lab {
+  background: var(--lab-bg);
+  border: 1px solid var(--lab-border);
+  border-radius: 4px;
+  padding: 0.9rem 1.4rem 0.9rem;
+  margin: 1.5rem 0;
+}
+.lab > h3:first-child { color: var(--head); margin: 0.3rem 0 0.7rem; }
+.lab ol { margin: 0.4rem 0 0.3rem; padding-left: 1.5rem; }
+.lab li { margin: 0.45rem 0; }
+
+/* ---------- tables ---------- */
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 1.15rem 0 1.6rem;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  border-top: 2px solid var(--brand);
+  border-bottom: 2px solid var(--brand);
+}
+caption {
+  caption-side: bottom;
+  text-align: left;
+  font-size: 0.85rem;
+  color: #444;
+  font-weight: 600;
+  padding-top: 0.5rem;
+}
+th {
+  background: var(--table-head);
+  color: #FFFFFF;
+  text-align: left;
+  padding: 0.45rem 0.7rem;
+  font-weight: 700;
+  border: none;
+}
+td {
+  padding: 0.42rem 0.7rem;
+  border: none;
+  border-bottom: 1px solid var(--table-line);
+  vertical-align: top;
+}
+tbody tr:nth-child(even) td { background: var(--table-zebra); }
+td code, th code { white-space: nowrap; }
+
+/* ---------- lists ---------- */
+ul, ol { margin: 0.8rem 0; padding-left: 1.6rem; }
+li { margin: 0.4rem 0; }
+
+/* ---------- table of contents ---------- */
+/* Wide screens: sticky sidebar for one-click navigation to every section.
+   Narrow screens: the TOC falls back to a normal block above the text. */
+nav#TOC {
+  border: 1px solid var(--code-line);
+  background: #F4F9FD;
+  padding: 1.2rem 1.6rem 1.2rem;
+  margin: 0 0 3rem;
+  border-radius: 4px;
+}
+nav#TOC::before {
+  content: "Contents";
+  display: block;
+  font-family: var(--sans);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--head);
+  margin-bottom: 0.7rem;
+}
+nav#TOC ul { list-style: none; padding-left: 0; margin: 0; }
+nav#TOC ul ul { padding-left: 1.25rem; }
+nav#TOC > ul > li { margin-top: 0.55rem; }
+nav#TOC li { margin: 0.18rem 0; }
+nav#TOC a { text-decoration: none; color: var(--body); }
+nav#TOC a:hover { color: var(--accent); text-decoration: underline; }
+nav#TOC > ul > li > a { font-weight: 700; color: var(--head); }
+
+@media (min-width: 1150px) {
+  body {
+    margin: 0 0 0 22.5rem;
+    max-width: 46rem;
+  }
+  nav#TOC {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 20.5rem;
+    height: 100vh;
+    overflow-y: auto;
+    margin: 0;
+    border-radius: 0;
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    padding: 1.6rem 1.2rem 2.5rem;
+  }
+  nav#TOC::before { position: sticky; top: 0; background: #F4F9FD; }
+}
+
+/* ---------- misc ---------- */
+a { color: var(--brand); }
+a:hover { color: var(--accent); }
+hr { border: none; border-top: 1px solid var(--code-line); margin: 2.5rem 0; }
+blockquote {
+  margin: 1.1rem 0;
+  padding: 0.1rem 1.1rem;
+  border-left: 3px solid var(--lab-border);
+  color: #444;
+}
+strong { font-weight: 700; }

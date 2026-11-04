@@ -1,0 +1,10 @@
+# Pandoc defaults — EPUB 3
+to: epub3
+standalone: true
+toc: true
+toc-depth: 2
+split-level: 1
+css: build/epub.css
+metadata-file: build/metadata.yaml
+metadata:
+  cover-image: build/epub-cover.png

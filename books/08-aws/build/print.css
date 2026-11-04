@@ -1,0 +1,88 @@
+/* print.css — paged-media rules for the PDF build (WeasyPrint).
+   Loaded together with style.css only for the print HTML intermediate.
+   The title page reproduces the book's dark cloud cover,
+   the TOC gets leader dots with real page numbers, and every heading
+   becomes a PDF outline bookmark (WeasyPrint default for h1-h6). */
+
+@page {
+  size: A4;
+  margin: 21mm 17mm 20mm 19mm;
+  @top-center {
+    content: "AWS for DevOps Engineers";
+    font-family: Georgia, "Tinos", "Liberation Serif", "Times New Roman", serif;
+    font-size: 8.5pt;
+    color: #8A8A8A;
+    border-bottom: 0.5pt solid #EEDFBC;
+    padding-bottom: 2mm;
+    margin-bottom: 4mm;
+    vertical-align: bottom;
+  }
+  @bottom-center {
+    content: counter(page);
+    font-family: Georgia, "Tinos", "Liberation Serif", "Times New Roman", serif;
+    font-size: 9pt;
+    color: #666666;
+    border-top: 0.5pt solid #EEDFBC;
+    padding-top: 2mm;
+    vertical-align: top;
+  }
+}
+
+/* Title page: full-bleed dark cover, no running header/footer */
+@page :first {
+  margin: 0;
+  @top-center { content: none; border: none; }
+  @bottom-center { content: none; border: none; }
+}
+
+html { font-size: 11pt; }
+body { max-width: none; padding: 0; margin: 0; }
+@media (min-width: 1150px) { body { margin: 0; } }
+
+header#title-block-header {
+  background: #232F3E;
+  padding: 100mm 18mm 85mm;
+  margin: 0;
+  border-top: 4px solid #FF9900;
+  border-bottom: 4px solid #FF9900;
+  break-after: page;
+}
+header#title-block-header .title { font-size: 26pt; color: #FFF8EF; }
+header#title-block-header .subtitle { font-size: 12.5pt; color: #D6E0EB; }
+header#title-block-header .author,
+header#title-block-header .date { color: #A6B7C9; }
+
+/* Chapters start on a fresh page; sections keep with following text */
+h1 { break-before: page; break-after: avoid; font-size: 17pt; margin-top: 0; }
+h2 { break-after: avoid; font-size: 13.5pt; }
+h3 { break-after: avoid; font-size: 11.5pt; }
+
+/* TOC: leader dots + real page numbers (WeasyPrint target-counter).
+   Entries are real hyperlinks, so every TOC line is clickable too. */
+nav#TOC {
+  break-after: page;
+  background: none;
+  border: none;
+  padding: 0;
+}
+nav#TOC::before { font-size: 14pt; }
+nav#TOC a {
+  color: #1A1A1A;
+  text-decoration: none;
+}
+nav#TOC a::after {
+  content: " " leader('.') " " target-counter(attr(href), page);
+  color: #555555;
+}
+
+/* Internal cross-reference links: identifiable but quiet on paper */
+p a, li a {
+  color: #B45309;
+  text-decoration: none;
+}
+
+/* Keep blocks intact across page breaks */
+pre, table, div.note, div.warn, .lab { break-inside: avoid; }
+pre { font-size: 8.6pt; line-height: 1.42; }
+table { font-size: 9.3pt; }
+li { break-inside: avoid; }

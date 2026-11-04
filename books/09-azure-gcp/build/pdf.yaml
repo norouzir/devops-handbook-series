@@ -1,0 +1,13 @@
+# Pandoc defaults — print-ready HTML intermediate for the PDF build.
+# build.sh pipes this into WeasyPrint (or any HTML-to-PDF engine).
+to: html5
+standalone: true
+toc: true
+toc-depth: 2
+embed-resources: true
+css:
+  - build/style.css
+  - build/print.css
+metadata-file: build/metadata.yaml
+variables:
+  document-css: false

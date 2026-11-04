@@ -1,0 +1,26 @@
+---
+title: Ansible for DevOps Engineers
+subtitle: A Practical Handbook from First Playbook to Fleet-Scale Automation
+author: DevOps Handbook Series
+series: DevOps Handbook Series
+volume: 4
+volume-slug: ansible
+date: October 2026
+lang: en
+publisher: DevOps Handbook Series
+description: >
+  A practical Ansible handbook for DevOps engineers in two parts: essentials
+  and advanced operations. Verified against ansible-core 2.21 and the Ansible
+  community package 14 (October 2026), including data tagging, execution
+  environments, AWX modernization, and Event-Driven Ansible.
+keywords:
+  - Ansible
+  - ansible-core
+  - DevOps
+  - Configuration Management
+  - Automation
+  - Execution Environments
+  - ansible-lint
+  - Molecule
+  - AWX
+  - Event-Driven Ansible

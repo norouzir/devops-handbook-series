@@ -1,0 +1,39 @@
+---
+title: Azure & GCP for DevOps Engineers
+subtitle: A Practical Handbook for Multi-Cloud Delivery
+author: DevOps Handbook Series
+series: DevOps Handbook Series
+volume: 9
+volume-slug: azure-gcp
+date: October 2026
+lang: en
+publisher: DevOps Handbook Series
+description: >
+  A practical multi-cloud handbook for DevOps engineers who already
+  know AWS, in two parts: Microsoft Azure - the az CLI, Microsoft Entra
+  ID and RBAC, Bicep infrastructure as code, VNets and Blob storage,
+  AKS, Azure Functions and Container Apps, and keyless CI/CD with
+  GitHub Actions OIDC - and Google Cloud - gcloud, IAM and Workload
+  Identity Federation, Compute Engine, Cloud Storage and Cloud SQL,
+  GKE, and Cloud Run - closing with a capstone that ships the same
+  application to AWS, Azure, and GCP and compares the platforms for
+  real. Verified against az CLI 2.x with Bicep, azure/login v3,
+  google-github-actions/auth v3, and actions/checkout v7
+  (October 2026).
+keywords:
+  - Azure
+  - GCP
+  - Google Cloud
+  - az CLI
+  - gcloud
+  - Bicep
+  - AKS
+  - GKE
+  - Cloud Run
+  - Azure Functions
+  - Container Apps
+  - Entra ID
+  - Workload Identity Federation
+  - GitHub Actions
+  - Multi-Cloud
+  - DevOps

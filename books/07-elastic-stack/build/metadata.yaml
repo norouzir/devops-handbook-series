@@ -1,0 +1,31 @@
+---
+title: Elastic Stack for DevOps Engineers
+subtitle: A Practical Handbook for Search, Logs, and Observability
+author: DevOps Handbook Series
+series: DevOps Handbook Series
+volume: 7
+volume-slug: elastic-stack
+date: October 2026
+lang: en
+publisher: DevOps Handbook Series
+description: >
+  A practical Elastic Stack handbook for DevOps engineers in two parts:
+  Elasticsearch foundations and production practice. Verified against
+  Elasticsearch 9.5, Kibana 9.5, and Logstash 9.5 (October 2026), including
+  the Query DSL, ES|QL, Elastic Agent and Fleet, data streams, ILM,
+  snapshots, and the hot-warm-cold architecture.
+keywords:
+  - Elasticsearch
+  - Kibana
+  - Logstash
+  - Elastic Stack
+  - Elastic Agent
+  - Fleet
+  - ES|QL
+  - Query DSL
+  - Aggregations
+  - Data Streams
+  - ILM
+  - Snapshots
+  - Observability
+  - DevOps

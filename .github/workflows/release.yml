@@ -1,0 +1,224 @@
+name: release
+
+# Publishes a GitHub release for every pushed tag, with the ten volumes built
+# from that exact commit attached: three files per volume (HTML, EPUB, PDF),
+# plus one archive that holds the same 30 files with each volume in its own
+# folder (00-DevOps_Handbook_Series_<tag>.zip) for a single-click download.
+#
+# GitHub lists a release's assets alphabetically and gives no way to reorder
+# them, so the order has to live in the file names: every volume's three files
+# are prefixed with its number (01-… through 10-…) and the archive with 00-…,
+# which keeps it at the top of the list.
+#
+#   git tag v2026.10 && git push origin v2026.10
+#
+# Re-running the workflow for the same tag uploads the artifacts again with
+# --clobber instead of failing on the existing release.
+
+on:
+  push:
+    tags:
+      - "**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    name: structural checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install checker dependencies
+        run: python -m pip install --upgrade pip pyyaml
+      - name: Check anchors, links, part dividers and metadata
+        run: python tools/check.py
+
+  build:
+    name: build ${{ matrix.volume }}
+    needs: check
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        volume:
+          - 01-docker
+          - 02-kubernetes
+          - 03-github-actions
+          - 04-ansible
+          - 05-terraform
+          - 06-prometheus-grafana
+          - 07-elastic-stack
+          - 08-aws
+          - 09-azure-gcp
+          - 10-devsecops
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            pandoc \
+            fonts-dejavu-core fonts-crosextra-carlito fonts-croscore fonts-liberation \
+            libpango-1.0-0 libpangoft2-1.0-0 libharfbuzz0b
+          python3 -m pip install --upgrade pip
+          python3 -m pip install weasyprint pillow
+      - name: Report toolchain versions
+        run: |
+          pandoc --version | head -1
+          python3 -c "import weasyprint; print('weasyprint', weasyprint.__version__)"
+      - name: Build HTML, EPUB and PDF
+        working-directory: books/${{ matrix.volume }}
+        run: bash build.sh all
+      - name: Verify all three formats exist
+        working-directory: books/${{ matrix.volume }}
+        run: |
+          set -euo pipefail
+          for ext in html epub pdf; do
+            ls output/*."$ext" >/dev/null 2>&1 || { echo "missing $ext output" >&2; exit 1; }
+          done
+      - name: Prefix the formats with the volume number
+        working-directory: books/${{ matrix.volume }}
+        env:
+          VOLUME: ${{ matrix.volume }}
+        run: |
+          set -euo pipefail
+          # The release page sorts assets alphabetically, so the series order has
+          # to be part of the file name: 01-Docker_for_DevOps_Engineers.pdf and
+          # so on. CI keeps the plain names; only release artifacts are numbered.
+          number="${VOLUME%%-*}"
+          for file in output/*.html output/*.epub output/*.pdf; do
+            name="$(basename "$file")"
+            case "$name" in
+              "$number"-*) continue ;;
+            esac
+            mv "$file" "output/$number-$name"
+          done
+          ls -1 output
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.volume }}
+          path: books/${{ matrix.volume }}/output/
+          if-no-files-found: error
+          retention-days: 30
+
+  release:
+    name: publish release
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download every volume's artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - name: Assemble the asset list
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(find dist -type f \( -name '*.pdf' -o -name '*.epub' -o -name '*.html' \) | sort)
+          if [ "${#files[@]}" -eq 0 ]; then
+            echo "no build artifacts found to publish" >&2
+            exit 1
+          fi
+          printf '%s\n' "${files[@]}" > assets.txt
+          echo "publishing ${#files[@]} files:"
+          cat assets.txt
+      - name: Bundle the series into one archive
+        run: |
+          set -euo pipefail
+          # One folder per volume, three formats in each, so an unzip gives ten
+          # directories instead of 30 loose files. Volume count comes from the
+          # PDFs actually downloaded, so the check scales with the series.
+          #
+          # The volume number stays on the folder, which is what keeps the
+          # extracted tree in series order; the files inside a folder keep the
+          # plain names they have locally, so 01-.../ holds Docker_....pdf.
+          mapfile -t pdfs < <(find dist -maxdepth 1 -name '*.pdf' | sort)
+          expected=${#pdfs[@]}
+          if [ "$expected" -eq 0 ]; then
+            echo "no PDFs in dist/ to bundle" >&2
+            exit 1
+          fi
+          rm -rf bundle
+          mkdir -p bundle
+          for pdf in "${pdfs[@]}"; do
+            numbered="$(basename "$pdf" .pdf)"
+            case "$numbered" in
+              [0-9][0-9]-*) folder="$numbered" ;;
+              *) echo "expected a volume number in $pdf" >&2; exit 1 ;;
+            esac
+            plain="${numbered#??-}"
+            mkdir -p "bundle/$folder"
+            for ext in html epub pdf; do
+              src="dist/$numbered.$ext"
+              if [ ! -f "$src" ]; then
+                echo "missing $src" >&2
+                exit 1
+              fi
+              cp "$src" "bundle/$folder/$plain.$ext"
+            done
+          done
+          volumes=$(find bundle -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
+          files=$(find bundle -type f | wc -l | tr -d ' ')
+          if [ "$volumes" -ne "$expected" ] || [ "$files" -ne $((expected * 3)) ]; then
+            echo "expected $expected volumes and $((expected * 3)) files, got $volumes and $files" >&2
+            exit 1
+          fi
+          bundle="00-DevOps_Handbook_Series_${GITHUB_REF_NAME//\//-}.zip"
+          rm -f "$bundle"
+          # Python builds the archive so the step needs no zip binary and the
+          # layout can be asserted before anything is published.
+          python3 - "$bundle" "$expected" <<'PY'
+          import pathlib
+          import sys
+          import zipfile
+
+          target = pathlib.Path(sys.argv[1])
+          expected = int(sys.argv[2])
+          with zipfile.ZipFile(target, 'w', zipfile.ZIP_DEFLATED) as archive:
+              for path in sorted(pathlib.Path('bundle').rglob('*')):
+                  if path.is_file():
+                      archive.write(path, path.relative_to('bundle').as_posix())
+          names = zipfile.ZipFile(target).namelist()
+          folders = {name.split('/')[0] for name in names}
+          size = target.stat().st_size / 1048576
+          print(f'{target}: {len(names)} files in {len(folders)} folders, {size:.1f} MiB')
+          for folder in sorted(folders):
+              print(f'  {folder}: ' + ', '.join(sorted(n.rsplit(".", 1)[-1] for n in names
+                                                     if n.startswith(folder + '/'))))
+          if len(names) != expected * 3 or len(folders) != expected:
+              sys.exit(f'archive does not hold {expected} volumes of three files each')
+          PY
+          printf '%s\n' "$bundle" >> assets.txt
+          # Sorting is only for a readable log line: the 00-/01-/10- prefixes
+          # already put the assets in the order GitHub will display them.
+          sort -o assets.txt assets.txt
+          echo "publishing these assets:"
+          cat assets.txt
+      - name: Create or update the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          # No checkout in this job, so tell gh which repository to publish to.
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          tag="$GITHUB_REF_NAME"
+          mapfile -t files < assets.txt
+          if gh release view "$tag" >/dev/null 2>&1; then
+            echo "release $tag already exists; uploading assets with --clobber"
+            gh release upload "$tag" "${files[@]}" --clobber
+          else
+            gh release create "$tag" "${files[@]}" \
+              --verify-tag \
+              --title "DevOps Handbook Series $tag" \
+              --generate-notes
+          fi

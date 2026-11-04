@@ -1,0 +1,33 @@
+---
+title: AWS for DevOps Engineers
+subtitle: A Practical Handbook for Compute, Networking, and Automation
+author: DevOps Handbook Series
+series: DevOps Handbook Series
+volume: 8
+volume-slug: aws
+date: October 2026
+lang: en
+publisher: DevOps Handbook Series
+description: >
+  A practical AWS handbook for DevOps engineers in two parts: the core
+  services every platform team lives in - IAM, EC2, VPC, S3, RDS, EKS,
+  and Lambda - and operating AWS at scale with CI/CD pipelines on
+  GitHub Actions, CloudWatch observability, Terraform infrastructure
+  as code, and cost governance. Verified against AWS CLI v2, Amazon
+  Linux 2023, and aws-actions/configure-aws-credentials v6
+  (October 2026).
+keywords:
+  - AWS
+  - EC2
+  - VPC
+  - S3
+  - IAM
+  - RDS
+  - EKS
+  - Lambda
+  - CloudWatch
+  - Terraform
+  - GitHub Actions
+  - OIDC
+  - Cost Management
+  - DevOps

@@ -1,0 +1,23 @@
+---
+title: Docker for DevOps Engineers
+subtitle: A Practical Handbook from First Principles to Production
+author: DevOps Handbook Series
+series: DevOps Handbook Series
+volume: 1
+volume-slug: docker
+date: October 2026
+lang: en
+publisher: DevOps Handbook Series
+description: >
+  A practical Docker handbook for DevOps engineers, covering everything from
+  first principles to production operations. Verified against Docker Engine v29
+  and Docker Desktop 4.97 (October 2026).
+keywords:
+  - Docker
+  - DevOps
+  - Containers
+  - OCI
+  - BuildKit
+  - buildx
+  - Compose
+  - Container Security

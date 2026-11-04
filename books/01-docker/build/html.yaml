@@ -1,0 +1,10 @@
+# Pandoc defaults — standalone HTML (single self-contained file)
+to: html5
+standalone: true
+toc: true
+toc-depth: 2
+embed-resources: true
+css: build/style.css
+metadata-file: build/metadata.yaml
+variables:
+  document-css: false

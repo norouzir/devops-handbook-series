@@ -1,0 +1,28 @@
+---
+title: Terraform for DevOps Engineers
+subtitle: A Practical Handbook from First Plan to Production-Scale Infrastructure as Code
+author: DevOps Handbook Series
+series: DevOps Handbook Series
+volume: 5
+volume-slug: terraform
+date: October 2026
+lang: en
+publisher: DevOps Handbook Series
+description: >
+  A practical Terraform handbook for DevOps engineers in two parts: essentials
+  and production practice. Verified against Terraform 1.17 and the ecosystem as
+  of October 2026 - OpenTofu 1.13, HCP Terraform and Stacks, ephemeral
+  resources, native state locking, the terraform test framework, and Policy as
+  Code.
+keywords:
+  - Terraform
+  - Infrastructure as Code
+  - HCL
+  - DevOps
+  - OpenTofu
+  - HCP Terraform
+  - State Management
+  - Modules
+  - CI/CD
+  - Policy as Code
+  - terraform test
