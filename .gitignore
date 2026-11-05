@@ -2,6 +2,9 @@
 books/*/output/
 books/*/build/.print.html
 
+# GitHub Pages site — assembled by tools/make_site.py (see .github/workflows/pages.yml)
+site/
+
 # OS and editor noise
 .DS_Store
 Thumbs.db

@@ -32,6 +32,27 @@ three drills in volume 6 and a workflow audit check in volume 10, Chapter 3 — 
 series to 65 hands-on exercises. Drills and checks are not numbered as labs and are not counted
 as such here.
 
+## Read online
+
+The series is published on GitHub Pages:
+**<https://norouzir.github.io/devops-handbook-series/>**. The landing page lists the ten volumes in
+reading order, and each volume opens as one page with its contents in a sidebar — the same HTML the
+release attaches, served instead of downloaded. PDF and EPUB editions stay on the
+[releases page](https://github.com/norouzir/devops-handbook-series/releases), where they are
+downloads rather than reading material.
+
+Every push to `main` rebuilds the site from the current manuscript (`.github/workflows/pages.yml`),
+so the online edition cannot fall behind the repository. To assemble the same site locally:
+
+```bash
+make html                              # build the HTML of all ten volumes
+python3 tools/make_site.py --out site  # lay out index + one directory per volume
+python3 -m http.server -d site 8000    # http://localhost:8000
+```
+
+`site/` is generated and git-ignored: the published site is never committed, for the same reason
+`output/` is not.
+
 ## How the volumes fit together
 
 Volume 1 packages an application, 2 runs it, 3 builds and ships it automatically, 4 configures
@@ -78,10 +99,12 @@ deliberately did not duplicate".
 ├── Makefile                   # build every volume: make [all|html|epub|pdf|check|clean]
 ├── .github/workflows/
 │   ├── ci.yml                 # builds and structurally checks all ten volumes
+│   ├── pages.yml              # on a push to main: publishes the HTML on GitHub Pages
 │   └── release.yml            # on a tag push: builds all ten, publishes a GitHub Release
 ├── tools/
 │   ├── check.py               # anchors, links, dividers, labs, metadata, build wiring
-│   └── make_covers.py         # regenerates all ten EPUB covers
+│   ├── make_covers.py         # regenerates all ten EPUB covers
+│   └── make_site.py           # assembles the GitHub Pages site from the built HTML
 └── books/
     ├── 01-docker/
     │   ├── manuscript/        # one Markdown file per part, chapter, and appendix
